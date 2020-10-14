@@ -37,7 +37,7 @@ pub fn run() -> Result<(), String> {
         }
 
         let l = 1024;
-        let size = 32;
+        let size = 1;
         for y in 0..l
         {
             for x in 0..l
