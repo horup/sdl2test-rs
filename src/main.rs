@@ -20,8 +20,8 @@ fn main()
     while backend.keep_running()
     {
         backend.poll_events();
-        let l = 256;
-        let size = 4.0;
+        let l = 1024;
+        let size = 1.0;
         for y in 0..l
         {
             for x in 0..l
