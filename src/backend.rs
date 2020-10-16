@@ -1,4 +1,4 @@
-
+//pub const MAX_TEXTURES:u16 = 16;
 pub trait Backend
 {
     fn keep_running(&mut self) -> bool;
@@ -6,15 +6,15 @@ pub trait Backend
     fn present(&mut self);
 
     
-    fn create_texture(&mut self, texture_data:&[u8], cols:f32, rows:f32) -> Texture;
+    fn load_texture(&mut self, texture_data:&[u8], cols:f32, rows:f32, index:usize) -> Texture;
     //fn draw_sprite(&mut self, x:f32, y:f32, col:f32, row:f32, tex:&Texture);
-    fn draw_sprite(&mut self, dist:&Rect, src:&Cell, tex:&Texture);
+    fn draw_sprite(&mut self, dist:&Rect, src:&Cell, index:usize);
 }
 
 #[derive(Debug, Copy, Clone)]
 pub struct Texture
 {
-    pub id:i32,
+    pub id:usize,
     pub width:f32,
     pub height:f32,
     pub cols:f32,

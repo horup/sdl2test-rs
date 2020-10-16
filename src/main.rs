@@ -12,7 +12,7 @@ fn main()
     let mut backend = SDL2Backend::new();
 
     let sheet_img = include_bytes!("sheet.png");
-    let sheet_texture = backend.create_texture(sheet_img, 16.0, 16.0);
+    let sheet_texture = backend.load_texture(sheet_img, 16.0, 16.0, 0);
 
     let mut now = Instant::now();
     let mut frames = 0;
@@ -35,7 +35,7 @@ fn main()
                 };
 
                 let src = b::Cell {col:i as f32, row:0.0};
-                backend.draw_sprite(&dist, &src, &sheet_texture);
+                backend.draw_sprite(&dist, &src, 0);
 
             }
         }

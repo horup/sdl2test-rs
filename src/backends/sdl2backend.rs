@@ -1,15 +1,17 @@
-use std::collections::HashMap;
 
 use sdl2::{Sdl, VideoSubsystem, event::Event, image::LoadTexture, keyboard::Keycode, rect::Rect, render::Canvas, render::TextureCreator, video::Window, video::WindowContext};
 use crate::backend as b;
+
+pub struct TextureRef(b::Texture, sdl2::render::Texture);
 pub struct SDL2Backend
 {
     pub sdl_context:Sdl,
     pub video_subsystem:VideoSubsystem,
     pub keep_running:bool,
     pub canvas:Canvas<Window>,
-    pub textures:HashMap<i32, sdl2::render::Texture>
+    pub textures:[Option<TextureRef>; 16]
 }
+
 
 impl crate::backend::Backend for SDL2Backend
 {
@@ -32,35 +34,38 @@ impl crate::backend::Backend for SDL2Backend
         self.canvas.present();
     }
 
-    fn create_texture(&mut self, texture_data:&[u8], cols:f32, rows:f32) -> crate::backend::Texture {
+    fn load_texture(&mut self, texture_data:&[u8], cols:f32, rows:f32, index:usize) -> crate::backend::Texture {
         let texture_creator = self.canvas.texture_creator();
         let sdl_texture = texture_creator.load_texture_bytes(texture_data).expect("loading of texture failed");
         let texture = crate::backend::Texture {
-            id:self.textures.len() as i32,
+            id:index,
             width:sdl_texture.query().width as f32,
             height:sdl_texture.query().height as f32,
             cols,
             rows
         };
 
-        self.textures.insert(texture.id, sdl_texture);
+        self.textures[index] = Some(TextureRef(texture, sdl_texture));
 
         return  texture;
     }
 
     //fn draw_sprite(&mut self, x:f32, y:f32, col:f32, row:f32, tex:&crate::backend::Texture) {
-    fn draw_sprite(&mut self, dist:&b::Rect, src:&b::Cell, tex:&b::Texture)
+    fn draw_sprite(&mut self, dist:&b::Rect, src:&b::Cell, index:usize)
     {
-        let w = tex.width / tex.cols;
-        let h = tex.height / tex.rows;
-
-        let sx = src.col * tex.width / tex.cols;
-        let sy = src.row * tex.height / tex.height;
-        let src = Rect::new(sx as i32, sy as i32, w as u32,h as u32);
-        let dist = Rect::new(dist.x as i32, dist.y as i32, dist.w as u32, dist.h as u32);
-        if let Some(texture) = self.textures.get(&tex.id)
+        if let Some(t) = &self.textures[index]
         {
-            self.canvas.copy(&texture, Some(src), Some(dist)).expect("failed to copy");
+            let tex = &t.0;
+            let texture = &t.1;
+            let w = tex.width / tex.cols;
+            let h = tex.height / tex.rows;
+
+            let sx = src.col * tex.width / tex.cols;
+            let sy = src.row * tex.height / tex.height;
+            let src = Rect::new(sx as i32, sy as i32, w as u32,h as u32);
+            let dist = Rect::new(dist.x as i32, dist.y as i32, dist.w as u32, dist.h as u32);
+        
+            self.canvas.copy(&texture, Some(src), Some(dist));
         }
     }
 }
@@ -76,12 +81,14 @@ impl SDL2Backend
         .build()
         .map_err(|e| e.to_string()).expect("could not create window");
         let canvas = window.into_canvas().build().map_err(|e| e.to_string()).expect("could not convert window into canvas");
+        
+        let textures:[Option<TextureRef>; 16] = Default::default();
         Box::new(SDL2Backend {
             sdl_context,
             video_subsystem,
             keep_running:true,
             canvas,
-            textures:HashMap::new()
+            textures
         })
     }
 }
