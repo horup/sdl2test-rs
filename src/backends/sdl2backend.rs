@@ -54,7 +54,9 @@ impl crate::backend::Backend for SDL2Backend
         let w = tex.width / tex.cols;
         let h = tex.height / tex.rows;
 
-        let src = Rect::new((src.col as f32 / tex.cols) as i32, (src.row / tex.rows) as i32, w as u32,h as u32);
+        let sx = src.col * tex.width / tex.cols;
+        let sy = src.row * tex.height / tex.height;
+        let src = Rect::new(sx as i32, sy as i32, w as u32,h as u32);
         let dist = Rect::new(dist.x as i32, dist.y as i32, dist.w as u32, dist.h as u32);
         if let Some(texture) = self.textures.get(&tex.id)
         {
