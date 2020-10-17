@@ -17,11 +17,15 @@ fn main()
     let mut now = Instant::now();
     let mut frames = 0;
 
+    let l = 1024;
+
+    let mut sprites:Vec<b::Sprite> = Vec::new();
+
     while backend.keep_running()
     {
         backend.poll_events();
-        let l = 1024;
         let size = 1.0;
+        sprites.clear();
         for y in 0..l
         {
             for x in 0..l
@@ -35,10 +39,14 @@ fn main()
                 };
 
                 let src = b::Cell {col:i as f32, row:0.0};
-                backend.draw_sprite(&dist, &src, 0);
-
+                sprites.push(b::Sprite { 
+                    dist,
+                    src
+                });
             }
         }
+
+        backend.draw_sprites(&sprites, 0, 0);
 
         backend.present();
         frames += 1;

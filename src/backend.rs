@@ -7,8 +7,14 @@ pub trait Backend
 
     
     fn load_texture(&mut self, texture_data:&[u8], cols:f32, rows:f32, index:usize) -> Texture;
-    //fn draw_sprite(&mut self, x:f32, y:f32, col:f32, row:f32, tex:&Texture);
-    fn draw_sprite(&mut self, dist:&Rect, src:&Cell, index:usize);
+
+    fn draw_sprites(&mut self, sprites:&[Sprite], texture_index:usize, surface_index:usize);
+}
+
+pub struct Sprite
+{
+    pub src:Cell,
+    pub dist:Rect
 }
 
 #[derive(Debug, Copy, Clone)]

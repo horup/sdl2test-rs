@@ -50,22 +50,23 @@ impl crate::backend::Backend for SDL2Backend
         return  texture;
     }
 
-    //fn draw_sprite(&mut self, x:f32, y:f32, col:f32, row:f32, tex:&crate::backend::Texture) {
-    fn draw_sprite(&mut self, dist:&b::Rect, src:&b::Cell, index:usize)
-    {
-        if let Some(t) = &self.textures[index]
+    fn draw_sprites(&mut self, sprites:&[b::Sprite], texture_index:usize, surface_index:usize) {
+        if let Some(t) = &self.textures[texture_index]
         {
             let tex = &t.0;
             let texture = &t.1;
-            let w = tex.width / tex.cols;
-            let h = tex.height / tex.rows;
-
-            let sx = src.col * tex.width / tex.cols;
-            let sy = src.row * tex.height / tex.height;
-            let src = Rect::new(sx as i32, sy as i32, w as u32,h as u32);
-            let dist = Rect::new(dist.x as i32, dist.y as i32, dist.w as u32, dist.h as u32);
-        
-            self.canvas.copy(&texture, Some(src), Some(dist));
+            for sprite in sprites
+            {
+               
+                let w = tex.width / tex.cols;
+                let h = tex.height / tex.rows;
+    
+                let sx = sprite.src.col * tex.width / tex.cols;
+                let sy = sprite.src.row * tex.height / tex.height;
+                let src = Rect::new(sx as i32, sy as i32, w as u32,h as u32);
+                let dist = Rect::new(sprite.dist.x as i32, sprite.dist.y as i32, sprite.dist.w as u32, sprite.dist.h as u32);
+                self.canvas.copy(&texture, Some(src), Some(dist)).expect("could not copy");
+            }
         }
     }
 }
