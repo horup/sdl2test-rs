@@ -80,7 +80,7 @@ impl SDL2Backend
         .position_centered()
         .build()
         .map_err(|e| e.to_string()).expect("could not create window");
-        let canvas = window.into_canvas().build().map_err(|e| e.to_string()).expect("could not convert window into canvas");
+        let canvas = window.into_canvas().software().build().map_err(|e| e.to_string()).expect("could not convert window into canvas");
         
         let textures:[Option<TextureRef>; 16] = Default::default();
         Box::new(SDL2Backend {
