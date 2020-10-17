@@ -4,10 +4,7 @@ pub trait Backend
     fn keep_running(&mut self) -> bool;
     fn poll_events(&mut self);
     fn present(&mut self);
-
-    
     fn load_texture(&mut self, texture_data:&[u8], cols:f32, rows:f32, index:usize) -> Texture;
-
     fn draw_sprites(&mut self, sprites:&[Sprite], texture_index:usize, surface_index:usize);
 }
 
